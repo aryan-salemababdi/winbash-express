@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import http from "http"
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { AllRoutes } from "./router/router.js";
 
 
 class Application {
@@ -39,7 +40,7 @@ class Application {
         }
     }
     createRoutes() {
-
+            this.#app.use(AllRoutes);
     }
     errorHandling() {
         this.#app.use((req, res, next) => {
