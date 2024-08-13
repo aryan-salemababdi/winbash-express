@@ -1,18 +1,16 @@
 import express from "express";
-import mongoose from "mongoose";
 import http from "http"
 import path from 'path';
+import cors from "cors";
 import { fileURLToPath } from 'url';
 import { AllRoutes } from "./router/router.js";
-
+import {pool} from "./utils/db.js"
 
 class Application {
     #app = express();
-    #DB_URI;
     #PORT;
-    constructor(PORT, DB_URI) {
+    constructor(PORT) {
         this.#PORT = PORT;
-        this.#DB_URI = DB_URI;
         this.configApplication();
         this.connectToMongoDB();
         this.createServer();
@@ -22,6 +20,7 @@ class Application {
     configApplication() {
         const __filename = fileURLToPath(import.meta.url);
         const __dirname = path.dirname(__filename);
+        this.#app.use(cors());
         this.#app.use(express.json());
         this.#app.use(express.urlencoded({ extended: true }));
         this.#app.use(express.static(path.join(__dirname, "..", "public")));
@@ -33,14 +32,14 @@ class Application {
     };
     async connectToMongoDB() {
         try {
-            await mongoose.connect(this.#DB_URI);
-            console.log('Connected to MongoDB');
+            await pool.connect();
+            console.log('Connected to Postgresql');
         } catch (error) {
-            console.error('Could not connect to MongoDB', error);
+            console.error('Could not connect to postgresql', error);
         }
     }
     createRoutes() {
-            this.#app.use(AllRoutes);
+        this.#app.use(AllRoutes);
     }
     errorHandling() {
         this.#app.use((req, res, next) => {

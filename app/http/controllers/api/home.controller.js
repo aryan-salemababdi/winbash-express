@@ -7,4 +7,4 @@ class HomeController extends Controller {
 }
 
 
-export default new HomeController;
+export default new HomeController; 
