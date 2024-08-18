@@ -11,5 +11,5 @@ export class ConstantsValues extends Constants {
     }
 }
 
-const constants = new ConstantsValues(new Date().getTime() + 120000, "USER");
+const constants = new ConstantsValues(new Date().getTime() + 1200000, "USER");
 export const constantValues = constants.getValues();

@@ -1,5 +1,6 @@
 import express from 'express';
 import homeController from '../../http/controllers/api/home.controller.js';
+import { VerifyAccessToken } from '../../http/middlewares/VerifyAccessToken/index.js';
 
 /**
  * @swagger
@@ -31,7 +32,7 @@ import homeController from '../../http/controllers/api/home.controller.js';
 
 
 const router = express.Router();
-router.get("/", homeController.indexPage);
+router.get("/",new VerifyAccessToken().verifyAccessToken ,homeController.indexPage);
 
 
 export {

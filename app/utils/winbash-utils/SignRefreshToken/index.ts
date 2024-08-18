@@ -1,16 +1,16 @@
-import JWT from "jsonwebtoken"
+import JWT from 'jsonwebtoken';
 import httpErrors from 'http-errors';
+import { pool } from '../../db';
 import { AccessToken } from "..";
-import { pool } from "../../db";
+import redisClient from '../../init_redis';
 
-
-export class SignAccessToekn extends AccessToken {
+export class RefreshToken extends AccessToken {
 
     constructor(userId: number | string) {
         super(userId);
     }
 
-    private async findUserById(userId: string | number): Promise<any> {
+    async findUserById(userId: string | number): Promise<any> {
         try {
             const result = await pool.query('SELECT * FROM users WHERE id = $1', [userId]);
             return result.rows[0];
@@ -26,22 +26,22 @@ export class SignAccessToekn extends AccessToken {
             if (!user) {
                 throw new Error('User not found');
             }
-            
             const payload = {
                 mobile: user.phone_number,
                 userID: this.userId
             };
 
-            const secret = process.env.SECRET_KEY!;
+            const refreshSecret = process.env.REFRESH_TOKEN_SCRET_KEY!;
             const options = {
-                expiresIn: '1h'
+                expiresIn: '1y'
             };
-            const token = JWT.sign({ userID: 12 }, secret, { expiresIn: '1h' });
             return new Promise((resolve, reject) => {
-                JWT.sign(payload, secret, options, (err, token) => {
+                JWT.sign(payload, refreshSecret, options, async (err, token) => {
                     if (err) {
                         reject(httpErrors.InternalServerError('Server Error'));
                     } else {
+                        const setResult = await redisClient.SETEX(String(this.userId), (365 * 24 * 60 * 60), token || "");
+                        console.log(`Redis SETEX result for user ${this.userId}: ${setResult}`);
                         resolve(token);
                     }
                 });
@@ -51,4 +51,4 @@ export class SignAccessToekn extends AccessToken {
             else console.log(err);
         }
     }
-};
+}

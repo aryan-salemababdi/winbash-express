@@ -26,6 +26,6 @@ export abstract class AccessToken {
         this.userId = userId;
     }
     abstract signAccessToken(): Promise<string | undefined>;
-
 };
+
 

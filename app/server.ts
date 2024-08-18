@@ -35,6 +35,7 @@ class Application {
         this.createServer();
         this.createRoutes();
         this.errorHandling();
+        this.initialRedis();
     }
 
     configApplication() {
@@ -90,6 +91,10 @@ class Application {
         } finally {
             if (client) client.release();
         }
+    }
+
+    initialRedis() {
+        import("../app/utils/init_redis")
     }
 
     createRoutes() {

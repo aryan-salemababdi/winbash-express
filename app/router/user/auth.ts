@@ -38,10 +38,6 @@ import UserAuthController from "../../http/controllers/user/auth/auth.controller
  */
 
 
-
-
-
-
 const router = Router();
 
 router.post("/get-otp", new UserAuthController().getOtp);
@@ -76,6 +72,25 @@ router.post("/get-otp", new UserAuthController().getOtp);
  *         description: Internal Server Error
  */
 router.post("/check-otp", new UserAuthController().checkOtp);
+/**
+ * @swagger
+ * /user/refresh-token:
+ *   post:
+ *     tags:
+ *       - UserAuth
+ *     summary: send refresh token for get new token refresh token
+ *     description: fresh token
+ *     parameters:
+ *       - in: body
+ *         required: true
+ *         type: string
+ *         name: refreshToken
+ *     responses:
+ *       200:
+ *         description: success
+ */
 
+
+router.post("/refresh-token", new UserAuthController().refreshTokens)
 
 export { router as UserAuthRoutes };

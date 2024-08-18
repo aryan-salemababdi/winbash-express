@@ -6,6 +6,8 @@ import { getOtpSchema, checkOtpSchema } from "../../../validators/user/auth.sche
 import FixedDigitRandomNumberGenerator from "../../../../utils/winbash-utils/RandomNumberGenerator";
 import { constantValues } from "../../../../utils/winbash-utils/constant";
 import { SignAccessToekn } from "../../../../utils/winbash-utils/SignAccessToken";
+import { VerifyRefreshToken } from "../../../../utils/winbash-utils/VerifyRefreshToken";
+import { RefreshToken } from "../../../../utils/winbash-utils/SignRefreshToken";
 
 class UserAuthController extends Controller {
     async getOtp(req: Request, res: Response, next: NextFunction) {
@@ -33,6 +35,46 @@ class UserAuthController extends Controller {
         }
     }
 
+    async refreshTokens(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { refreshToken } = req.body;
+
+            console.log(refreshToken);
+
+
+
+
+
+
+            const mobileQuery = `SELECT * FROM users WHERE phone_number = $1 LIMIT 1`;
+            const mobile = await new VerifyRefreshToken().verifyRefreshToken(refreshToken);
+            const mobileResult = await pool.query(mobileQuery, [mobile]);
+
+            if (mobileResult.rowCount === 0) {
+                console.log(mobile);
+                throw httpErrors.NotFound('کاربری با این شماره موبایل پیدا نشد');
+            }
+
+
+            const user = mobileResult.rows[0];
+
+
+            const accessToken = await new SignAccessToekn(user.id).signAccessToken();
+
+            const newRefreshToken = await new RefreshToken(user.id).signAccessToken();
+
+            return res.json({
+                data: {
+                    accessToken,
+                    refreshToken: newRefreshToken
+                }
+            })
+
+        } catch (err) {
+            next(err)
+        }
+    }
+
     async checkOtp(req: Request, res: Response, next: NextFunction) {
         try {
             await checkOtpSchema.validateAsync(req.body);
@@ -50,7 +92,7 @@ class UserAuthController extends Controller {
 
             const storedOtp = user.otp?.code;
             const otpExpiry = user.otp?.expiresIn;
-            
+
             if (!String(storedOtp) || !otpExpiry) {
                 throw httpErrors.Unauthorized('کد اعتبارسنجی معتبر نیست');
             }
@@ -61,18 +103,21 @@ class UserAuthController extends Controller {
             if (otpExpiry < currentTime) {
                 console.log(otpExpiry);
                 console.log(currentTime);
-                
+
                 throw httpErrors.Unauthorized('کد اعتبارسنجی منقضی شده است');
             }
 
             const accessToken = await new SignAccessToekn(user.id).signAccessToken();
+
+            const refreshToken = await new RefreshToken(user.id).signAccessToken();
 
             return res.status(200).json({
                 statusCode: 200,
                 message: "کد اعتبارسنجی صحیح است",
                 user,
                 date: {
-                    accessToken
+                    accessToken,
+                    refreshToken
                 }
             });
 

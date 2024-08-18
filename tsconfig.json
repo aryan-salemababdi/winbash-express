@@ -9,6 +9,7 @@
       "resolveJsonModule": true,
       "allowSyntheticDefaultImports": true,
       "forceConsistentCasingInFileNames": true,
+      "typeRoots": ["./node_modules/@types", "./types.d.ts"],
       "noEmit": true
     },
     "ts-node": {
@@ -16,7 +17,7 @@
         "transpileOnly": true,
         "esm": true,
       },
-    "include": ["./app/**/*.ts", "./index.ts"],
+    "include": ["./app/**/*.ts", "./index.ts", "app/utils/security/secret_key_generator.js", "app/utils/security/secret_key_generator.js"],
     "exclude": ["node_modules"]
   }
   
