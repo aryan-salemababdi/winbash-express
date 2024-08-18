@@ -2,6 +2,7 @@ import express from 'express';
 import { HomeRoutes } from './api/index.js';
 import { UserAuthRoutes } from './user/auth.js';
 import redisClient from '../utils/init_redis/index.js';
+import { DeveleperRoutes } from './developer.routes.js';
 
 
 (async () => {
@@ -15,6 +16,7 @@ import redisClient from '../utils/init_redis/index.js';
 const router = express.Router();
 
 router.use("/user", UserAuthRoutes);
+router.use("/developer", DeveleperRoutes);
 router.use("/", HomeRoutes);
 
 export {
