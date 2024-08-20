@@ -1,11 +1,9 @@
-// در فایل types.d.ts
-
 import { Request } from 'express';
 
 declare global {
   namespace Express {
     export interface Request {
-      user?: any;  // یا تایپ دقیق‌تر برای user
+      user?: any; 
     }
   }
 }
