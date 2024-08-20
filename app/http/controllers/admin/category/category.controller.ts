@@ -41,9 +41,9 @@ class CategoryController extends Controller {
         }
     }
 
-    async updateCategory(id: number, data: any) {
+    async updateCategory(req: Request, res: Response, next: NextFunction) {
         try {
-            const result = await this.updateCategoryStrategy.execute(id, data);
+            const result = await this.updateCategoryStrategy.execute(req, res, next);
             return result;
         } catch (error) {
             console.error("Error updating category:", error);
@@ -81,10 +81,14 @@ class CategoryController extends Controller {
         }
     }
 
-    async getCategoryById(id: number) {
+    async getCategoryById(req: Request, res: Response, next: NextFunction) {
         try {
-            const result = await this.getCategoryByIdStrategy.execute(id);
-            return result;
+            const result = await this.getCategoryByIdStrategy.execute(req, res, next);
+            return res.status(200).json({
+                data: {
+                    result
+                }
+            });
         } catch (error) {
             console.error("Error fetching category by id:", error);
             throw error;
