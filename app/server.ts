@@ -43,11 +43,12 @@ class Application {
         const __dirname = path.dirname(__filename);
         this.#app.use(morgan("dev"));
         this.#app.use(cors());
-        this.#app.use(express.json());
         this.#app.use(express.urlencoded({ extended: true }));
+        this.#app.use(express.json());
         this.#app.use(express.static(path.join(__dirname, "..", "public")));
         this.#app.use("/api-doc", swaggerUi.serve, swaggerUi.setup(swaggerJSDoc({
             swaggerDefinition: {
+                openapi: "3.0.0",
                 info: {
                     title: "winbash",
                     version: "1.0.0",
@@ -58,14 +59,30 @@ class Application {
                         email: "aryansab80@gmail.com"
                     }
                 },
-                server: [
+                servers: [
                     {
                         url: "http://localhost:5000",
                     }
-                ]
+                ],
+                components: {
+                    securitySchemes: {
+                        BearerAuth: {
+                            type: "http",
+                            scheme: "bearer",
+                            bearerFormat: "JWT"
+                        }
+                    }
+                },
+                security: {
+                    BearerAuth: []
+                }
             },
-            apis: ["./app/router/**/*.ts"]
-        })))
+            apis: ["./app/router/**/*.ts"],
+        }),
+            {
+                explorer: true,
+            }
+        ))
     }
 
     createServer() {

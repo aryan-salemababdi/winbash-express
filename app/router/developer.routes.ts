@@ -7,14 +7,6 @@ const router = express.Router();
 
 /**
  * @swagger
- *  tags:
- *      name : Developer-Routes
- *      description : developer utils
- */
-
-
-/**
- * @swagger
  * /developer/hash-password/{password}:
  *   get:
  *     summary: Hashes the provided password

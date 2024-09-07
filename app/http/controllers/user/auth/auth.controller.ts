@@ -81,8 +81,14 @@ class UserAuthController extends Controller {
 
             const { mobile, code } = req.body;
 
+            console.log(mobile, code);
+            
+
             const mobileQuery = `SELECT * FROM users WHERE phone_number = $1 LIMIT 1`;
             const mobileResult = await pool.query(mobileQuery, [mobile]);
+
+            console.log(mobileResult.rowCount);
+            
 
             if (mobileResult.rowCount === 0) {
                 throw httpErrors.NotFound('کاربری با این شماره موبایل پیدا نشد');
@@ -101,11 +107,16 @@ class UserAuthController extends Controller {
             }
             const currentTime = Date.now();
             if (otpExpiry < currentTime) {
-                console.log(otpExpiry);
-                console.log(currentTime);
+                console.log(otpExpiry < currentTime);
 
+                console.log("otpexpiry:", otpExpiry);
+    
+                console.log(currentTime);
                 throw httpErrors.Unauthorized('کد اعتبارسنجی منقضی شده است');
             }
+            
+            
+            
 
             const accessToken = await new SignAccessToekn(user.id).signAccessToken();
 

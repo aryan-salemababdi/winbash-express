@@ -12,8 +12,8 @@ export class VerifyAccessToken {
         console.log('Headers:', headers);
 
 
-        if (typeof headers?.["access-token"] === 'string') {
-            const [bearer, token] = headers["access-token"].split(" ") || [];
+        if (typeof headers?.authorization === 'string') {
+            const [bearer, token] = headers?.authorization.split(" ") || [];
             if (bearer?.toLowerCase() === 'bearer' && token) {
                 console.log("Token:", token);
 
